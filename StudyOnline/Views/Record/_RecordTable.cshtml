@@ -1,0 +1,27 @@
+﻿@using Model
+@using StudyOnline.Infrastructure
+@model IEnumerable<RecordData>
+
+        <table class="table table-hover table-striped table-condensed">
+            <tr>
+                <th class="th_width4">名称</th>
+                <th class="th_width3">开始时间</th>
+                <th class="th_width3">结束时间</th>
+                <th class="th_width6">小时数</th>
+                <th class="th_width6">分钟数</th>
+                <th class="th_width6">操作</th>
+            </tr>
+            @foreach (var record in Model)
+            {
+                TimeSpan timeSpan = record.EndTime - record.StartTime;
+                <tr>
+                    <td>@Html.ShortenText(record.ResourceName,23)</td>
+                    <td>@record.StartTime.ToString("MM-dd hh:mm")</td>
+                    <td>@record.EndTime.ToString("MM-dd hh:mm")</td>
+                    <td>@timeSpan.TotalHours.ToString("0.00")</td>
+                    <td>@timeSpan.TotalMinutes.ToString("0.00")</td>
+                    <td>@Html.ActionLink("删除", "Delete", new { recordId = record.Id, pageIndex = ViewBag.PageIndex },
+                    new {@class="record_delete" })</td>
+                </tr>
+            }
+        </table>

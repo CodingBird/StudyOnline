@@ -1,0 +1,22 @@
+﻿@model StudyOnline.Models.DocInfo
+
+@{
+    ViewBag.Title = "知识文档管理";
+    ViewBag.ParentNav = "知识文档管理";
+    ViewBag.ParentUrl = Url.Action("List");
+    ViewBag.ChildNav = ViewBag.CurrentCategory;
+    ViewBag.ChildUrl = ViewBag.CurrentCategoryUrl;
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h3 style="text-align:center;">@Model.Name</h3>
+
+<div style="text-align:center;">
+     @Model.Author &nbsp &nbsp
+    <span>阅读次数:@Model.ViewCount</span> &nbsp
+    <span>添加时间:@Model.UploadTime.ToString("yyyy-MM-dd hh:mm")</span>
+</div>
+<hr />
+<div>
+    @Html.DisplayTextFor(d=>d.Content)
+</div>

@@ -1,0 +1,124 @@
+﻿@using StudyOnline.Infrastructure
+@using Model
+@using StudyOnline.Models
+@model IEnumerable<VideoInfo>
+@{
+    ViewBag.Title = "视频资源";
+    ViewBag.ParentNav = "视频资源";
+    ViewBag.ParentUrl = Url.Action("List");
+    ViewBag.ChildNav = ViewBag.CurrentCategory;
+    ViewBag.ChildUrl = ViewBag.CurrentCategoryUrl;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="video-table">
+    @{Html.RenderPartial("_VideoTable", Model, ViewData);}
+</div>
+    @{
+        
+        PagingInfo pagingInfo = (PagingInfo)ViewBag.PagingInfo;
+        Func<int, string> pageUrl = (Func<int, string>)ViewBag.PageUrl;
+    }
+    <div class="pagination pagination-centered" id="ajax-paging">
+        @Html.AjaxPageLinks(pagingInfo, pageUrl, 3, "video-table")
+    </div>
+
+
+<div id="popup">
+    <div id="video_show_place"></div>
+</div>
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery.bpopup-0.9.0.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/mediaplayer-5.10/jwplayer.js")"></script>
+    
+    <script type="text/javascript">
+        var startTime;
+        var endTime;
+        bulidEventAfterAjax();
+
+        function bulidEventAfterAjax() {
+            $(".videoDetail").bind("click", function (e) {
+                //e.preventDefault();
+                $('#popup').bPopup({
+                    appendTo: 'body'
+                    , zIndex: 1000
+                    , follow: [true, false]
+                    , modalClose: false
+                    , modalColor: '#000'
+                    , modal: true
+                    , escClose: false
+
+                });
+            });
+        }
+        function bindEventAfterGetVideoDetail() {
+            //点击开始学习，如果存在视频地址，执行以下操作
+            //显示视频内容
+            //改变第二个button的value值，使其根据value值确定要做的事
+            //记录开始时间
+            $("#video_btn_start").click(function () {
+                
+                $(this).attr("disabled", true);
+                var url = $("#video_url").val(); 
+                //alert(url);
+                if(url != null &&url!=""){ //如果存在该视频
+                    $("#video_btn_end").val("结束学习");
+                    startTime = new Date().toLocaleString();
+                    alert("开始时间："+startTime);
+                    setupVideoPlayer();
+                    jwplayer("mediaspace").load("@Url.Content("~/Uploads/video/")"+url);
+                }else{
+                    $(".novideo_notice").show();
+                }
+                $("#resource_detail").show();
+                $(".studyNotice").hide();
+            });
+            $("#video_btn_end").click(function () {
+                if ($(this).val() == "结束学习") {
+                    jwplayer('mediaspace').pause(true);     //暂停
+                    var isClose = confirm("确定结束当前学习");
+                    if (!isClose) {
+                        jwplayer("mediaspace").pause(false);   //继续
+                        return false;
+                    } else {
+                        jwplayer("mediaspace").stop();   //结束，从内存清除
+                        postRecord();
+                    }
+                }
+                $('#popup').bPopup().close();
+
+            });
+        }
+        
+    
+    function postRecord() {
+        endTime = new Date().toLocaleString();
+        var name = $(".video_title").attr("data-title");
+        var id = $("#Id").val();
+        //alert(name);
+        alert("开始时间是:"+startTime+"   结束时间是："+ endTime);
+        $.post("/Record/Add", {
+            strStart: startTime,
+            strEnd: endTime,
+            resourceName: name,
+            resourceId: id
+        }, function (data, status) {
+            //alert(data);
+        })
+    }
+        function setupVideoPlayer() {
+            //alert("1");
+            jwplayer("mediaspace").setup({
+                autostart: true,
+                height: "400",
+                width: "560",
+                skin: "/Scripts/mediaplayer-5.10/newtubedark.zip",
+                modes: [
+                    { type: "flash", src: "/Scripts/mediaplayer-5.10/player.swf" },
+                    { type: "html5" }
+                ]
+            });
+        }
+    </script>
+}

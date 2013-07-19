@@ -1,0 +1,8 @@
+﻿@using Model
+@model IEnumerable<DocCategory>
+
+
+@foreach (var cat in Model)
+{
+    <li class="doc-nav">@Html.ActionLink(cat.Name, "Genre","Doc", new { area="Admin",categoryId = cat.Id,categoryName= cat.Name},null)</li>   
+}

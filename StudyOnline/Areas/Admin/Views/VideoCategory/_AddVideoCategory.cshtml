@@ -1,0 +1,39 @@
+﻿@model VideoCategoryInfo
+
+
+        @if (string.IsNullOrEmpty(Model.Name))
+        {
+            using (Html.BeginForm("Add", "VideoCategory", FormMethod.Post))
+            {
+                <div>
+                    @Html.LabelFor(c => c.Name)
+                    @Html.TextBoxFor(c => c.Name)
+                    @Html.ValidationMessageFor(c => c.Name)
+                </div>
+                <div>
+                    @Html.LabelFor(c => c.Description)
+                    @Html.TextAreaFor(c => c.Description)
+                    @Html.ValidationMessageFor(c => c.Description)
+                </div>
+                <input type="submit" value="添加" />
+            }
+        }
+        else
+        {
+            using (Html.BeginForm("Edit", "VideoCategory", FormMethod.Post))
+            {
+                <div>
+                    @Html.LabelFor(c => c.Name)
+                    @Html.TextBoxFor(c => c.Name)
+                    @Html.ValidationMessageFor(c => c.Name)
+                </div>
+                <div>
+                    @Html.LabelFor(c => c.Description)
+                    @Html.TextAreaFor(c => c.Description)
+                    @Html.ValidationMessageFor(c => c.Description)
+                </div>
+                @Html.HiddenFor(c=>c.Id)
+                <input type="submit" value="更新" />
+            }
+        }
+    

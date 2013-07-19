@@ -1,0 +1,8 @@
+﻿@using Model
+@model IEnumerable<VideoCategory>
+
+
+    @foreach (var cat in Model)
+    {
+        <li>@Html.ActionLink(cat.Name, "Genre","Video", new { categoryId = cat.Id, categoryName = cat.Name },null)</li>
+    }

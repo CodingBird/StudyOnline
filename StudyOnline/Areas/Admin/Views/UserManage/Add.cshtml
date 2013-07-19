@@ -1,0 +1,76 @@
+﻿@model RegisterModel
+@{
+    ViewBag.Title = "添加用户";
+    ViewBag.ParentNav = "用户管理";
+    ViewBag.ParentUrl = Url.Action("List");
+    ViewBag.ChildNav = "添加用户";
+    ViewBag.ChildUrl = Url.Action("Add");
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+    
+    <ul class="nav nav-tabs" id="user_tab">
+        <li class="active"><a href="#adduser"  data-toggle="tab">添加用户</a></li>
+        <li><a href="#addusers" data-toggle="tab">批量添加用户</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active" id="adduser">
+            @using (Html.BeginForm("Add", "UserManage", FormMethod.Post, new { @class = "form-horizontal" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary()
+                 <div class="control-group">
+                    @Html.LabelFor(m => m.UserName, new { @class="control-label"})
+                    <div class="controls">
+                        @Html.TextBoxFor(m => m.UserName)
+                        @Html.ValidationMessageFor(m=>m.UserName)
+                    </div>
+                </div>
+                <div class="control-group">
+                    @Html.LabelFor(m => m.Password, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.PasswordFor(m => m.Password)
+                        @Html.ValidationMessageFor(m=>m.Password)
+                    </div>
+                </div>
+                <div class="control-group">
+                    @Html.LabelFor(m => m.ConfirmPassword, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.PasswordFor(m => m.ConfirmPassword)
+                        @Html.ValidationMessageFor(m=>m.ConfirmPassword)
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <input type="submit" class="btn btn-primary" value="添加" />
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="tab-pane" id="addusers">
+            <div>
+                @using (Html.BeginForm("AddUsers", "UserManage", FormMethod.Post,new { enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary()                                
+                    <input type="file" name="file" />
+                    <input type="submit" value="确定" />
+                }
+            </div>
+            <div id="uploadResult"></div>
+        </div>
+    </div>
+    <div><input type="hidden" value="@ViewBag.ActivieTab" id="activeTab"/></div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript" src="@Url.Content("~/Content/bootstrap/js/bootstrap.min.js")" ></script>
+    <script type="text/javascript">
+        $(function () {
+            if ($("#activeTab").val() == "addUsers") {
+                $('#user_tab a:last').tab('show');
+            }
+
+        })
+    </script>
+}

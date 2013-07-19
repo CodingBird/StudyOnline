@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/style.min.css")" title="style"  media="screen"/>
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/bootstrap/css/bootstrap.css")" title="style"  media="screen"/>
+    @Scripts.Render("~/bundles/modernizr")
+    @*@Styles.Render("~/Content/themes/base/css")*@
+    @RenderSection("header",required:false)
+</head>
+<body>
+    <div id="page">
+        <div id="header">
+            
+        </div>
+        <div id="main" class="container-fluid">
+          <div id="second_bar">
+                <div class="user">@User.Identity.Name  @Request.UserHostAddress
+                </div>
+                <div class="breadcrumbs_container">
+                    <div class="breadcrumbs">
+                        <a href="@ViewBag.ParentUrl">@ViewBag.ParentNav</a>
+                        <span class="breadcrumb_divider"></span>
+                        <a href="@ViewBag.ChildUrl">@ViewBag.ChildNav</a>
+                    </div>
+                </div>
+            </div>
+          <div class="row-fluid">
+            <div class="span2" id="nav">
+                <ul class="leftnav">
+                   <li>教学资源管理</li>
+                  <li>
+                      @Html.ActionLink("视频资源管理", "List", "Video", new { area="Admin"},null)
+                        <span></span>
+                        <div class="sub_nav undis" id="sub_nav1">
+                            <ul>
+                                @Html.Action("Menu","VideoCategory")
+                            </ul>
+                        </div>   
+                    </li>
+                    <li>@Html.ActionLink("视频类别管理","List","VideoCategory")</li>
+                    <li>
+                      @Html.ActionLink("知识文档管理", "List", "Doc", new { area ="Admin"},null)
+                        <span></span>
+                        <div class="sub_nav undis" id="sub_nav2">
+                            <ul>
+                                @{Html.RenderAction("Menu", "DocCategory");}
+                            </ul>
+                        </div>   
+                    </li>
+                    <li>@Html.ActionLink("文档类别管理","List","DocCategory")</li>
+                    <li>用户信息管理</li>
+                    <li>@Html.ActionLink("用户管理", "List","UserManage")</li>
+                    <li>@Html.ActionLink("管理员设置", "Setting","UserManage")</li>
+                </ul>
+            </div>
+            <div id="right" class="span10">
+              <!--Body content-->
+              @RenderBody()
+            </div>
+          </div>
+        </div>
+        <div id="footer" style="clear:both;text-align:center;">
+            南京工业大学党委组织部 <br />
+           @* @{Html.RenderAction("RenderTotalLoginCount", "Account");}*@
+        </div>
+    </div>
+    
+    @Scripts.Render("~/bundles/jquery")
+    @*@Scripts.Render("~/bundles/jqueryui");*@
+    @*<script type="text/javascript" src="@Url.Content("~/Content/bootstrap/js/bootstrap.min.js")" />*@
+    @*<script type="text/javascript" src="@Url.Content("~/Scripts/leftnav.js")" />*@
+    @RenderSection("scripts", required: false)
+    
+    
+</body>
+</html>

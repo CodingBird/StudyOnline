@@ -1,0 +1,25 @@
+﻿@using StudyOnline.Infrastructure
+@model StudyOnline.Models.DocInfo
+<div class="studyNotice">
+    <h3>请点击"开始学习"，将显示文档内容并记录开始时间。</h3>
+    <h3>还不想开始！请点击"取消"返回</h3>
+</div>
+<div id="resource_detail" style="display:none">
+    @Html.HiddenFor(d => d.Id)
+    <h3 style="text-align:center;">
+        <span class="doc_title" data-title="@Model.Name">@Html.ShortenText(Model.Name,20)</span>
+    </h3>
+    <div style="text-align:center;">
+        <span>@Model.Author &nbsp &nbsp @Model.UploadTime.ToString("yyyy-MM-dd")</span> &nbsp
+        <span>阅读次数：@Model.ViewCount</span>
+    </div>
+    <hr />
+    <div style="width:700px;">
+       @Html.DisplayTextFor(d=>d.Content)
+    </div>
+</div>
+<div style="text-align:center;">
+    <input class="btn btn-primary" type="button" id="btn_start" value="开始学习" />
+    <input class="btn btn-primary" type="button" id="btn_end" value="取消" />
+</div>
+

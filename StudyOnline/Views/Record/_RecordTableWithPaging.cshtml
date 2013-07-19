@@ -1,0 +1,15 @@
+﻿@using Model
+@using StudyOnline.Models
+@using StudyOnline.Infrastructure
+
+        @model IEnumerable<RecordData>
+        <div id="record-table">
+           @{Html.RenderPartial("_RecordTable", Model);}
+        </div>
+        @{
+            PagingInfo pagingInfo = (PagingInfo)ViewBag.PagingInfo;
+            Func<int, string> pageUrl = (Func<int, string>)ViewBag.PageUrl;
+        }
+        <div class="pagination pagination-centered" id="ajax-paging" style="display:block">
+            @Html.AjaxPageLinks(pagingInfo,pageUrl,3,"record-table")
+        </div>

@@ -1,0 +1,132 @@
+﻿@model VideoInfo
+
+@{
+    ViewBag.Title = "视频资源管理";
+    ViewBag.ParentNav = "视频资源管理";
+    ViewBag.ParentUrl = Url.Action("List");
+    ViewBag.ChildNav = "添加视频";
+    ViewBag.ChildUrl = Url.Action("Add");
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div style="border:1px solid #ebebeb;padding:12px 15px;margin:15px 15px;">
+    <div class="step_bar" style="padding-bottom:10px;margin-bottom:10px;">
+        <ul class="step_inf">
+            <li>1.选择文件</li>
+            <li>2.上传并填写信息</li>
+            <li>3.上传完成</li>
+        </ul>
+    </div>
+    <div class="upload_tool" style="padding-top:10px;">
+        <span><input type="file" name="uploadify" id="uploadify" /></span>
+        <h4 class="extNotice"><b>上传支持1G以内，.avi,.flv,.mp4等格式视频</b></h4>
+        
+    </div>
+    
+    <div id="fileQueue" class="video_content" style="margin-left:50px;"></div>
+    <div class="videoinfoadd_form" style="display:none;">
+        @using (Html.BeginForm("Add", "Video",new{area="Admin"}, FormMethod.Post, new { @class = "form-horizontal" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            <div class="controls video_url_notice">
+                    @Html.ValidationMessageFor(v => v.Url)
+                </div>
+            <div class="control-group">
+                
+            </div>
+            <div class="control-group">
+                @Html.LabelFor(v => v.Name, new { @class = "control-label" })
+                <div class="controls">
+                    @Html.TextBoxFor(v => v.Name)
+                    @Html.ValidationMessageFor(v => v.Name)
+                </div>
+            </div>
+            <div class="control-group">
+                @Html.LabelFor(v => v.Origin, new { @class = "control-label" })
+                <div class="controls">
+                    @Html.TextBoxFor(v => v.Origin)
+                    @Html.ValidationMessageFor(v => v.Origin)
+                </div>
+            </div>
+            <div class="control-group">
+                @Html.LabelFor(v => v.Description, new { @class = "control-label" })
+                <div class="controls">
+                    @Html.TextAreaFor(v => v.Description)
+                    @Html.ValidationMessageFor(v => v.Description)
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">视频类别</label>
+                <div class="controls">
+                    @Html.Action("ListForDropdownList", "VideoCategory")
+                    @Html.ValidationMessageFor(v => v.CategoryId)
+                </div>
+            </div>
+            
+            
+            
+            <div style="visibility:hidden;">
+                @Html.TextBoxFor(v => v.Url)
+                @Html.TextBoxFor(v => v.CategoryId)
+            </div>
+            <div><input type="submit" value="保存" id="save" /></div>
+        }
+    </div>
+</div>
+
+
+@section header{
+    <link href="@Url.Content("~/Scripts/uploadify-v3.1/uploadify.css")" rel="stylesheet" type="text/css" />
+}
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript" src="@Url.Content("~/Scripts/uploadify-v3.1/jquery.uploadify-3.1.js")" ></script>
+    
+    <script type="text/javascript">
+        $(function () {
+            $("#uploadify").uploadify({
+                swf: '@Url.Content("~/Scripts/uploadify-v3.1/uploadify.swf")',
+                'uploader': '/Admin/Video/UploadVideo',
+                'cancelImg': '/Scripts/uploadify-v3.1/cancel.png',
+                'queueID': 'fileQueue',
+                'buttonText': '选择文件',
+                'fileTypeExts': '*.flv;*.mp4;*.avi;*.rmvb;',
+                'queueSizeLimit': 1,
+                'multi': false,
+                'fileSizeLimit': '1024000KB',
+                'onUploadStart': function (file) {
+                    var index = file.name.lastIndexOf(".");
+                    $("#Name").val(file.name.substr(0, index));  //根据原文件名，预填写文件名
+                    $(".videoinfoadd_form").show();   //显示上传表单
+                    $(".upload_tool").hide();   //隐藏上传按钮
+                },
+                'onCancel': function (file) {
+                    location.reload();
+                },
+                'onUploadError': function (file, errorCode, errorMsg, errorString) {
+                    $(".videoinfoadd_form").hide();   //隐藏上传表单
+                    $(".upload_tool").show();   //显示上传按钮
+                    $(".video_url_notice").html(file + "上传失败，请重试").removeClass("controls").addClass("alert-error");
+                },
+                'onUploadSuccess': function (file, data, response) {
+                    //alert('The file ' + file.name + ' was successfully uploaded with a response of ' + response + ':' + data);
+                    var uploadResult = JSON.parse(data);
+                    //alert(uploadResult.SaveName);
+                    $("#Url").val(uploadResult.SaveName);
+                    $(".video_url_notice").html(file.name + "上传成功！请点击保存").removeClass("controls").addClass("alert-success");
+                }
+            });
+            //矫正上传文件的swf的位置
+            //            var ob = $(".swfupload");
+            //            ob.css("margin-left", -376);
+            //alert(ob.css("margin-left"));
+            $("#save").click(function () {
+                var categoryId = $("#list").val();
+                if (categoryId != null) {
+                    $("#CategoryId").val(categoryId);
+                }
+            });
+        });
+    </script>
+}

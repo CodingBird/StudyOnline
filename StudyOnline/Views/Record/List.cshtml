@@ -1,0 +1,24 @@
+﻿@{
+    ViewBag.Title = "List";
+    ViewBag.ParentNav = "学习记录";
+    ViewBag.ParentUrl = Url.Action("List","Record");
+}
+@{
+    Html.RenderAction("RenderRecerdTableWithPaging", "Record", new { userName = User.Identity.Name });
+}
+
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        bulidEventAfterAjax();
+        function bulidEventAfterAjax() {
+            $(".record_delete").click(function () {
+                var isDelete = confirm("确定删除该条记录？");
+                if (!isDelete) {
+                    return false;
+                }
+            });
+        }
+    </script>
+}

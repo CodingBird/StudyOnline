@@ -1,0 +1,19 @@
+﻿@using Model
+@using StudyOnline.Infrastructure
+@using StudyOnline.Models
+<h4>用户：@ViewBag.UserName</h4>
+<ul class="nav nav-tabs" id="user_tab">
+    <li class="active"><a href="#records-pane"  data-toggle="tab">详细记录</a></li>
+    <li><a href="#statistic-pane" data-toggle="tab">记录统计</a></li>
+</ul>
+<div class="tab-content">
+    <div class="tab-pane active" id="records-pane">
+        @Html.Action("RenderRecerdTableWithPaging", "Record", new { userName=ViewBag.UserName});
+    </div>
+    <div class="tab-pane" id="statistic-pane">
+        @Html.Action("RenderStatisticTableWidthPaging", "Record", new { userName = ViewBag.UserName })
+    </div>
+</div>
+
+<script type="text/javascript" src="@Url.Content("~/Scripts/ajaxpage.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Content/bootstrap/js/bootstrap.min.js")" ></script>

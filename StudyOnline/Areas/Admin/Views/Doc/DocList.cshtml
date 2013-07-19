@@ -1,0 +1,74 @@
+﻿@using StudyOnline.Infrastructure
+@using Model;
+
+@model IEnumerable<DocInfo>
+@{
+    ViewBag.Title = "知识文档管理";
+    ViewBag.ParentNav = "知识文档管理";
+    ViewBag.ParentUrl = Url.Action("List","Doc");
+    ViewBag.ChildNav = ViewBag.CurrentCategory;
+    ViewBag.ChildUrl = ViewBag.CurrentCategoryUrl;
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+@{
+    IEnumerable<DocCategory> cats = (IEnumerable<DocCategory>)ViewBag.Categories;
+}
+
+<div>
+    <span style="float:right;">@Html.ActionLink("添加文档", "Add","Doc", null, new { @class = "btn btn-primary" })</span>
+</div>
+<table class="table table-hover table-striped" style="clear:both;">
+    <tr>
+        <th class="th_width4">文档名称</th>
+        <th>文档类别</th>
+        <th>点击次数</th>
+        <th>上传时间</th>
+        <th>操作</th>
+        <th>操作</th>
+    </tr>
+    @{
+        int catId;
+        DocCategory category;
+        string catName;
+        foreach (var doc in Model)
+        {
+            catId = Convert.ToInt32(doc.DocCategoryId);
+            category = cats.Where(c => c.Id == catId).FirstOrDefault();
+            catName = category == null?"":category.Name;
+            <tr>
+                <td>@Html.ActionLink(Html.ShortenText(doc.Name, 23), "Detail", 
+                    new { docId = doc.Id, docName = doc.Name ,returnUrl = Request.Url.AbsolutePath})</td>
+                <td>@Html.ActionLink(Html.ShortenText(catName, 5), "Genre",
+                    new { categoryName = category.Name, categoryId = category.Id }, new { title=catName})</td>
+                <td>@doc.ViewCount.ToString()</td>
+                <td>@doc.UploadTime.ToString("yyyy-MM-dd hh:mm:ss")</td>
+                <td>@Html.ActionLink("编辑", "Edit", new { docId = doc.Id, docName = doc.Name ,returnUrl = Request.Url.AbsolutePath})</td>
+                <td>@Html.ActionLink("删除", "Delete", new { docId = doc.Id, returnUrl = Request.Url.ToString() }, new { @class = "btn_delete_doc" })</td>
+            </tr>
+        }
+     }
+</table>
+
+@{
+    PagingInfo pagingInfo = new PagingInfo
+    {
+        PageIndex = ViewBag.PageIndex,
+        RecordCount = ViewBag.DocCount
+    };
+    Func<int, UrlHelper, string> pageUrlAccessor = ViewBag.PageUrlAccessor;
+}
+<div class="pagination pagination-centered" id="paging">
+    @Html.PageLinks(pagingInfo, pageIndex => pageUrlAccessor(pageIndex, Url))
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(".btn_delete_doc").click(function () {
+            var isDelete = confirm("确认删除该文档？");
+            if (!isDelete) {
+                return false;
+            }
+        });
+    </script>
+}

@@ -1,0 +1,8 @@
+﻿@using Model
+@model IEnumerable<VideoCategory>
+@{
+    string catId = ViewBag.CatId;
+    var selectList = new SelectList(Model, "Id", "Name", catId);
+    
+}
+@Html.DropDownList("list",selectList)

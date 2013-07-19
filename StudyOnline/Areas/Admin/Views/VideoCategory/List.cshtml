@@ -1,0 +1,47 @@
+﻿@using Model
+@model IEnumerable<VideoCategory>
+
+@{
+    ViewBag.Title = "视频类别管理";
+    ViewBag.ParentNav = "视频类别管理";
+    ViewBag.ParentUrl = Url.Action("List","VideoCategory");
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div>
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th>类别名称</th>
+                <th>操作</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var cat in Model)
+            {
+                <tr>
+                    <td>@Html.ActionLink(cat.Name, "Genre","Video", 
+                        new {area="Admin", categoryId= cat.Id,categoryName=cat.Name}) <br/></td>
+                    <td>@Html.ActionLink("编辑", "List","VideoCategory", new { categoryId = cat.Id },null)</td>
+                    <td>@Html.ActionLink("删除", "Delete", new { categoryId = cat.Id }, new { @class="btn_delete"})</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div>@{
+    VideoCategory category = Model.Where(c => c.Id == ViewBag.EditCateId).FirstOrDefault();
+    VideoCategoryInfo categoryInfo = category == null ? new VideoCategoryInfo() : VideoCategoryInfo.FromVideoCategory(category);
+    Html.RenderPartial("_AddVideoCategory", categoryInfo);}</div>
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        $(".btn_delete").click(function () {
+            var isDelete = confirm("警告：删除该类别将导致此类别下的所有视频也被删除！确认删除？");
+            if (!isDelete) {
+                return false;
+            }
+        });
+    </script>
+}

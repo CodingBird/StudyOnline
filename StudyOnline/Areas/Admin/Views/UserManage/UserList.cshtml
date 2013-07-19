@@ -1,0 +1,77 @@
+﻿@using System.Web.Security
+@using StudyOnline.Infrastructure
+
+@model MembershipUserCollection
+@{
+    ViewBag.Title = "用户管理";
+    ViewBag.ParentNav = "用户管理";
+    ViewBag.ParentUrl = Url.Action("List");
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div>
+    <div class="pull-right">@Html.ActionLink("添加用户", "Add", null,new { @class = " btn btn-primary" })</div>
+    <div >
+        @using (Html.BeginForm("List", "UserManage", FormMethod.Post, new { @class="form-search"}))
+        {
+            <input type="text" id="userName" name="userName" class="input-medium search-query" />
+            <input type="submit" value="搜索" class="btn" />
+        }
+    </div>
+    <table class="table table-hover table-striped" style="clear:both;">
+        <tr>
+            <th>用户名</th>
+            <th>操作</th>
+            <th>操作</th>
+        </tr>
+        @foreach (MembershipUser user in Model)
+        {
+            <tr>
+                <td>@user.UserName</td>
+                <td>@Ajax.ActionLink("查看学习记录", "RenderRecordsInUserManagePage", "Record",
+                    new {area="",userName=user.UserName }, new AjaxOptions
+                   {
+                       UpdateTargetId = "userRecords",
+                       InsertionMode = InsertionMode.Replace,
+                       OnSuccess="afterGetRecords"
+                   })
+                </td>
+                <td>@Html.ActionLink("删除", "Delete", new { userName = user.UserName, returnUrl = Request.Url.AbsolutePath },
+                    new { @class="delete_user"})</td>
+            </tr>   
+        }
+    </table>
+    <div class="pagination pagination-centered">
+        @{
+            PagingInfo pagingInfo = new PagingInfo
+            {
+                PageIndex = ViewBag.PageIndex,
+                RecordCount = ViewBag.UserCount
+            };
+            Func<int, UrlHelper, string> pageUrlAccessor = (Func<int, UrlHelper, string>)ViewBag.PageUrlAccessor;
+        }
+        @Html.PageLinks(pagingInfo, pageIndex => pageUrlAccessor(pageIndex,Url))
+    </div>
+   @* @{RegisterModel model = new RegisterModel();}
+    <div>@{Html.RenderPartial("Add",model);}</div>*@
+</div>
+<div id="userRecords">
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    
+    <script type="text/javascript">
+        $(function () {
+            $(".delete_user").click(function () {
+                var isDelete = confirm("确认删除该用户？与该用户相关的数据都将删除");
+                if (!isDelete) {
+                    return false;
+                }
+            });
+
+        })
+        function afterGetRecords() {
+            //alert("success");
+        }
+    </script>
+}

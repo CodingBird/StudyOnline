@@ -1,0 +1,75 @@
+﻿@model StudyOnline.Models.DocInfo
+
+@{
+    ViewBag.Title = "知识文档管理";
+    ViewBag.ParentNav = "知识文档管理";
+    ViewBag.ParentUrl = Url.Action("List","Doc");
+    ViewBag.ChildNav = "添加文档";
+    ViewBag.ChildUrl = Request.Url.AbsolutePath;
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h4 style="text-align:center;">添加文档</h4>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div>
+        <label class="add_doc_label" for="Name">标题</label>(必填*)
+        @Html.TextBoxFor(d => d.Name, new { @class="span6"})
+        @Html.ValidationMessageFor(d => d.Name)
+    </div>
+    <div>
+        <label class="add_doc_label" for="Author">作者或来源</label>
+        @Html.TextBoxFor(d => d.Author)
+        @Html.ValidationMessageFor(d => d.Author)
+    </div>
+    <div>
+        <label class="add_doc_label">文档类别</label>(必选*)
+        @Html.Action("ListForDropdownList", "DocCategory")
+        @Html.ValidationMessageFor(d => d.DocCategoryId)
+    </div>
+    <div>
+        <label class="add_doc_label" >文档内容</label>(必填*)
+        @Html.TextAreaFor(d => d.Content, new { id = "editor" })
+        @Html.ValidationMessageFor(d => d.Content)
+    </div>
+    <div style="visibility:hidden;">
+        @Html.TextBoxFor(d => d.DocCategoryId)
+    </div>
+    
+    <div style="text-align:center;"><input type="submit"  class="btn btn-primary"  id="btn_save" value="保存" /></div>
+}
+
+@section header{
+    <script type="text/javascript">
+    <!--
+        window.UEDITOR_HOME_URL = location.pathname.substr(0, location.pathname.lastIndexOf('/')) + '/';
+        //-->
+        
+    </script>
+    <link href="@Url.Content("~/Scripts/UEditor/themes/default/ueditor.css")" rel="stylesheet" type="text/css" />
+}
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="@Url.Content("~/Scripts/UEditor/editor_config.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/UEditor/editor.js")" type="text/javascript"></script>
+    
+    <script type="text/javascript">
+        $(function () {
+            //alert("1");
+            var editor = new baidu.editor.ui.Editor;
+            editor.render("editor");
+        });
+        var catId = $("#list").val();
+        $("#DocCategoryId").val(catId);
+        $("#list").change(function () {
+            catId = $(this).val()
+            //alert($(this).val());
+            $("#DocCategoryId").val(catId);
+        });
+        
+        
+    </script>
+}

@@ -1,0 +1,24 @@
+﻿@{
+    ViewBag.Title = "首页";
+    ViewBag.ParentNav = "网站首页";
+    ViewBag.ParentUrl = Url.Action("index");
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div style="clear:both;padding-top:10px;">
+    <div>@{Html.RenderAction("RenderNewerVideos", "Video");}</div>
+    <div>@{Html.RenderAction("RenderHoterVideos", "Video");}</div>
+</div>
+<div style="clear:both;padding-top:10px;">
+    <div>@{Html.RenderAction("RenderNewerDocs", "Doc");}</div>
+    <div>@{Html.RenderAction("RenderHoterDocs", "Doc");}</div>
+</div>
+<div id="popup">
+        <div id="info_show_place"></div>
+</div>
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery.bpopup-0.9.0.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/mediaplayer-5.10/jwplayer.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/homepage.js")" ></script>
+}

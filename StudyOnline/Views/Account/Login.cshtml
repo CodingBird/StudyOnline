@@ -1,0 +1,41 @@
+﻿@model StudyOnline.Models.LoginModel
+
+@{
+    ViewBag.Title = "用户登录";
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+}
+
+
+<div class="userlogin">
+            <div style="background-image: url('/Content/images/login_title.jpg'); height: 120px; width: 454px;
+                margin: 0px;">
+            </div>
+@using (Html.BeginForm(new { ReturnUrl = ViewBag.ReturnUrl })) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend></legend>
+        <ol>
+            <li>
+                @Html.LabelFor(m => m.UserName)
+                @Html.TextBoxFor(m => m.UserName)*
+                @Html.ValidationMessageFor(m => m.UserName)
+            </li>
+            <li>
+                @Html.LabelFor(m => m.Password)
+                @Html.PasswordFor(m => m.Password)*
+                @Html.ValidationMessageFor(m => m.Password)
+            </li>
+            <li>
+                @Html.CheckBoxFor(m => m.RememberMe)
+                @Html.LabelFor(m => m.RememberMe, new { @class = "remembercheckbox" })
+            </li>
+        </ol>
+        <span style="padding-left:60px;"><input type="submit" class="btn btn-primary span2" value="登录" /></span>
+        
+    </fieldset>
+    <span class="pull-right"><a href="@Url.Action("Login", "Account", new { area="admin"})">管理员入口-></a></span>
+}
+
+</div>

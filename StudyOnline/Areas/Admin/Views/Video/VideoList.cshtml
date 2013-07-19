@@ -1,0 +1,168 @@
+﻿@using StudyOnline.Models;
+@using Model;
+@using StudyOnline.Infrastructure;
+@model IEnumerable<StudyOnline.Models.VideoInfo>
+@{
+    ViewBag.Title = "视频管理";
+    ViewBag.ParentNav = "视频管理";
+    ViewBag.ParentUrl = Url.Action("List","Video");
+    ViewBag.ChildNav = ViewBag.CurrentCategory;
+    ViewBag.ChildUrl = ViewBag.CurrentCategoryUrl;
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+@{
+    IEnumerable<VideoCategory> cats = (IEnumerable<VideoCategory>)ViewBag.Categories;
+}
+
+<div id="videoList">
+
+    <div>
+        <span style="float:right;">
+            @Html.ActionLink("添加视频", "Add", null, new { @class = "btn btn-primary" })
+        </span>
+    </div>
+    <table class="table table-hover table-striped" style="clear:both;">
+        <thead>
+            <tr>
+                <th class="th_width4">视频名称</th>
+                <th>视频类别</th>
+                <th>播放次数</th>
+                <th>上传时间</th>
+                <th>操作</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        @{
+            int catId;
+            VideoCategory category;
+            string catName;
+            foreach (var videoInfo in Model)
+            {
+                catId = Convert.ToInt32(videoInfo.CategoryId);
+                category = cats.Where(c => c.Id == catId).FirstOrDefault();
+                catName = category == null?"":category.Name;
+            <tr>
+                <td>@Html.ActionLink(Html.ShortenText(videoInfo.Name,23), "Detail",
+                new { videoName = videoInfo.Name, videoId = videoInfo.Id, returnUrl = Request.Url.AbsolutePath },
+             new { data_id = videoInfo.Id, title = videoInfo.Name })</td>
+
+
+                <td>@Html.ActionLink(Html.ShortenText(catName, 5), "Genre",
+                     new { categoryName = category.Name, categoryId = category.Id }, new { title = catName })</td>
+                <td>@videoInfo.PlayCount.ToString()</td>
+                <td>@videoInfo.UploadTime.ToString("yyyy-MM-dd hh:mm")</td>
+
+                <td>@Ajax.ActionLink("编辑", "Edit", new { videoId = videoInfo.Id }, new AjaxOptions
+               {
+                   InsertionMode = InsertionMode.Replace,
+                   UpdateTargetId = "edit_videoInfo",
+                   HttpMethod = "GET",
+                   OnSuccess = "bulidEditEvent"
+               }, new { @class = "btn_edit_video" })</td>
+
+                <td>@Html.ActionLink("删除", "Delete", new { videoId = videoInfo.Id, returnUrl = Request.Url.ToString() }, new { @class = "btn_delete_video" })</td>
+            </tr>
+            }
+        }
+        </tbody>
+    </table>
+    @{
+        PagingInfo pagingInfo = new PagingInfo
+        {
+            PageIndex = (int)ViewBag.PageIndex,
+            RecordCount = (int)ViewBag.RecordCount
+        };
+        Func<int, UrlHelper, string> pageUrlAccessor = (Func<int, UrlHelper, string>)ViewBag.PageUrlAccessor;
+    }
+    <div class="pagination pagination-centered" id="paging">
+        @Html.PageLinks(pagingInfo, pageIndex => pageUrlAccessor(pageIndex, Url))
+    </div>
+</div>
+<div id="popup">
+    <div id="edit_videoInfo"></div>
+</div>
+
+
+@section header{
+
+}
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+@*@Scripts.Render("~/bundles/jqueryui")*@
+  
+  <script type="text/javascript" src="@Url.Content("~/Scripts/jquery.bpopup-0.9.0.min.js")"></script>
+  
+  <script type="text/javascript">
+      $(function () {
+          //点击编辑时，设置popup
+          $(".btn_edit_video").bind("click", function (e) {
+              //alert("click");
+              //e.preventDefault();
+              $('#popup').bPopup({
+                  appendTo: 'body'
+                    , zIndex: 1000
+                    , modalClose: false
+                    , modalColor: '#000'
+                    , modal: true
+                    , escClose: false
+
+              });
+          });
+          //点击删除链接
+          $(".btn_delete_video").click(function () {
+              var isDelete = confirm("确定删除该视频");
+              if (!isDelete) {
+                  return false;
+              }
+          });
+          //操作分页的样式
+
+
+
+      });
+      //ajax获取待编辑视频内容后，为按钮绑定事件
+      function bulidEditEvent() {
+          //alert("1");
+          $("#btn_save").click(function () {
+              //alert("save");
+              //validateInputEmpty("Name", "name_error");
+              //alert("save");
+              //alert($("#video_id").val());
+              if (validateInputEmpty("Name", "name_error")) {
+                  //alert("validated");
+                  $.post("/Admin/Video/Edit", {
+                      "videoId": $("#video_id").val(),
+                      "videoName": $("#Name").val(),
+                      "videoDsc": $("#Description").val(),
+                      "catId": $("#list").val()
+                  }, function (data, status) {
+                      if (data == "更新成功") {
+                          $('#popup').bPopup().close();
+                      }
+                  })
+              }
+
+          });
+          $("#cancel").click(function () {
+              $('#popup').bPopup().close();
+          });
+
+      }
+      function validateInputEmpty(targetId, errorId) {
+          alert($("#" + targetId).val());
+          if ($("#" + targetId).val().length <= 0) {
+              $("#" + errorId).show();
+              return false;
+          }
+          return true;
+      }
+
+      function afterEditSuccess() {
+          alert("1success");
+
+      }
+  </script>
+}

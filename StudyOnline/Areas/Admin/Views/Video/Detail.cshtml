@@ -1,0 +1,58 @@
+﻿@model  VideoInfo
+
+@{
+    ViewBag.Title = "视频资源管理";
+    ViewBag.ParentNav = "视频资源管理";
+    ViewBag.ParentUrl = Url.Action("List");
+    ViewBag.ChildNav = ViewBag.CurrentCategory;
+    ViewBag.ChildUrl = ViewBag.CurrentCategoryUrl;
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+<div style="border:1px solid #ebebeb;padding:12px 35px;margin:15px 15px;">
+    <h3>@Model.Name</h3>
+    <div id='mediaspace' style="border:2px solid blue;font-size:large">
+        <div class="novideo_notice">
+            :( 对不起，<br/>该视频不存在或已被删除！
+        </div>
+    </div>
+    <div id="video_info" style="display:none;">
+        <strong>视频信息:</strong>
+        <div>@Model.Description</div>
+        <strong>视频来源:</strong>
+        <div>@Model.Origin</div>
+    </div>
+    @Html.HiddenFor(v => v.Url, new { id = "video_url" })
+    <div style="text-align:center;"><a href="@ViewBag.returnUrl">返回</a></div>
+</div>
+
+
+
+@section scripts{
+    <script type="text/javascript" src="@Url.Content("~/Scripts/mediaplayer-5.10/jwplayer.js")"></script>
+    <script type="text/javascript">
+
+        $(function () {
+            var videoUrl = $("#video_url").val();
+            if (videoUrl != "" && videoUrl != null) {
+                $("#video_info").show();   //显示视频描述
+                jwplayer("mediaspace").setup({    
+                    autostart: false,
+                    height: "320",
+                    width: "440",
+                    skin: "/Scripts/mediaplayer-5.10/newtubedark.zip",
+                    modes: [
+                        { type: "flash", src: "/Scripts/mediaplayer-5.10/player.swf" },
+                        { type: "html5" }
+                    ]
+                });
+            
+                jwplayer("mediaspace").load("@Url.Content("~/Uploads/video/")"+videoUrl);
+            }else{
+                $(".novideo_notice").show();
+            }
+        })
+    </script>
+}
+

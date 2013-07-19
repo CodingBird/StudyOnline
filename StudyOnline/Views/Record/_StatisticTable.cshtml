@@ -1,0 +1,25 @@
+﻿@using StudyOnline.Infrastructure
+@using StudyOnline.Models
+
+@model IEnumerable<RecordStatistic>
+
+
+<table class="table table-hover table-striped table-condensed">
+    <thead>
+        <tr>
+            <th class="th_width1">课程名称</th>
+            <th>小时总数</th>
+            <th>分钟总数</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var statistic in Model)
+        {
+        <tr>
+            <td>@Html.ShortenText(statistic.ResourceName,33)</td>
+            <td>@statistic.TotalHours.ToString("0.00")</td>
+            <td>@statistic.TotalMinutes.ToString("0.00")</td>
+        </tr>
+        }
+    </tbody>
+</table>

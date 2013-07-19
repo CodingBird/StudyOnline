@@ -1,0 +1,40 @@
+﻿@using StudyOnline.Infrastructure
+@using Model
+@using StudyOnline.Models
+@model IEnumerable<DocInfo>
+@{
+    IEnumerable<DocCategory> cats = ViewData["cats"] as IEnumerable<DocCategory>;
+}
+    <table class="table table-hover table-striped">
+        <tr>
+            <th class="th_width1">文档名称</th>
+            <th class="th_width2">文档类别</th>
+            <th class="th_width2">点击次数</th>
+            <th class="th_width2">上传时间</th>
+        </tr>
+        @{
+            int catId;
+            DocCategory cat;
+            string catName;
+            foreach (var doc in Model)
+            {
+                catId = Convert.ToInt32(doc.DocCategoryId);
+                cat = cats.Where(c => c.Id == catId).FirstOrDefault();
+                catName = cat == null ? "" : cat.Name;
+                <tr>
+                    <td>@Ajax.ActionLink(Html.ShortenText(doc.Name,33), "Detail", new { docId = doc.Id }, new AjaxOptions
+                   {
+                       InsertionMode = InsertionMode.Replace,
+                       UpdateTargetId = "doc_show_place",
+                       HttpMethod = "GET",
+                       OnSuccess = "bindEventAfterGetDocDetail"
+                   }, new { @class = "docDetail" ,title=doc.Name})</td>
+               
+                    <td>@Html.ActionLink(Html.ShortenText(catName, 5), "Genre", new { categoryName=catName,categoryId = catId},
+                    new {title=catName})</td>
+                    <td>@doc.ViewCount.ToString()</td>
+                    <td>@doc.UploadTime.ToString("yyyy-MM-dd")</td>
+                </tr>
+            }
+        }
+    </table>

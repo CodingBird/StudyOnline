@@ -1,0 +1,93 @@
+﻿@using StudyOnline.Infrastructure
+@using Model
+@using StudyOnline.Models
+
+@model IEnumerable<DocInfo>
+@{
+    ViewBag.Title = "知识文库";
+    ViewBag.ParentNav = "知识文库";
+    ViewBag.ParentUrl = Url.Action("List");
+    ViewBag.ChildNav = ViewBag.CurrentCategory;
+    ViewBag.ChildUrl = ViewBag.CurrentCategoryUrl;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div id="doc-table">
+    @{Html.RenderPartial("_DocTable", Model, ViewData);}
+</div>
+    @{
+        PagingInfo pagingInfo = (PagingInfo)ViewBag.PagingInfo;
+        Func<int, string> pageUrl = (Func<int, string>)ViewBag.PageUrl;
+    }
+<div class="pagination pagination-centered" id="ajax-paging">
+    @Html.AjaxPageLinks(pagingInfo, x => pageUrl(x),3,"doc-table")
+</div>
+
+<div id="popup">
+    <div id="doc_show_place"></div>
+</div>
+
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery.bpopup-0.9.0.min.js")"></script>
+    <script type="text/javascript">
+        bulidEventAfterAjax();
+        var startTime;
+        var endTime;
+        function bulidEventAfterAjax() {
+            bindEventForDocClick();
+        }
+        function bindEventForDocClick() {
+            $(".docDetail").bind("click", function (e) {
+                //e.preventDefault();
+                $('#popup').bPopup({
+                    appendTo: 'body'
+                    , follow: [true, false]
+                    , zIndex: 1000
+                    , modalClose: false
+                    , modalColor: '#000'
+                    , modal: true
+                    , escClose: false
+                });
+            });
+        }
+        function bindEventAfterGetDocDetail() {
+            //点击开始学习，如果存在视频地址，执行以下操作
+            //显示视频内容
+            //改变第二个button的value值，使其根据value值确定要做的事
+            //记录开始时间
+            $("#btn_start").click(function () {
+                $(this).attr("disabled", true);
+                $("#btn_end").val("结束学习");
+                startTime = new Date().toLocaleString();
+                alert("开始时间：" + startTime);
+                $("#resource_detail").show();
+                $(".studyNotice").hide();
+            });
+            $("#btn_end").click(function () {
+                if ($(this).val() == "结束学习") {
+                    postDocRecord();
+                }
+                $('#popup').bPopup().close();
+            });
+        }
+        function postDocRecord() {
+            endTime = new Date().toLocaleString();
+            var name = $(".doc_title").attr("data-title");
+            var id = $("#Id").val();
+            //alert(id);
+            alert("开始时间是:" + startTime + "   结束时间是：" + endTime);
+            $.post("/Record/Add", {
+                strStart: startTime,
+                strEnd: endTime,
+                resourceName: name,
+                resourceId: id
+            }, function (data, status) {
+                //alert(data);
+            })
+        }
+
+    </script>
+}

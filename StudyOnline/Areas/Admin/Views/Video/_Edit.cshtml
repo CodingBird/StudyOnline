@@ -1,0 +1,44 @@
+﻿@model VideoInfo
+
+
+
+
+    <div>
+        <h4>编辑视频信息</h4>
+        <hr style="margin-top:10px;" />
+         <form class="form-horizontal">
+            <div class="control-group">
+                    @Html.LabelFor(v => v.Name, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.TextBoxFor(v => v.Name)
+                        <span id="name_error" style="display:none;" class="field-validation-error">请填写视频名称</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">视频类别</label>
+                    <div class="controls">
+                        @Html.Action("ListForDropdownList", "VideoCategory", new { categoryId = Model.CategoryId })
+                    </div>
+                </div>
+                <div class="control-group">
+                    @Html.LabelFor(v => v.Origin, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.TextBoxFor(v => v.Origin)
+                        @Html.ValidationMessageFor(v => v.Origin)
+                    </div>
+                </div>
+                <div class="control-group">
+                    @Html.LabelFor(v => v.Description, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.TextAreaFor(v => v.Description)
+                    </div>
+                </div>
+                <div style="text-align:center;">
+                    <input  type="hidden" id="video_id" value="@Model.Id" />
+                    <input class="btn btn-primary" type="button" value="保存修改" id="btn_save" />
+                    <input class="btn btn-primary" type="button" value="取消" id="cancel" />
+                </div>
+         </form>
+                
+         
+    </div>

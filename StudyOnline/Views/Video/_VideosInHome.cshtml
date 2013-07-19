@@ -1,0 +1,32 @@
+﻿@using Model
+@using StudyOnline.Infrastructure
+@model IEnumerable <VideoData>
+
+<div class="tbox">
+    <div class="utitle">
+        <div class="utitlei">
+            <div class="tabTitle"><span class="utabTitle">@ViewBag.Title</span></div>
+        </div>
+    </div>
+    
+    <div class="tabContent">
+        <div class="list-main clear" style="padding:0 15px 8px;">
+            <ul>
+            @foreach (var video in Model)
+            {
+                <li>
+                    <span class="date">@video.UploadTime.ToString("MM-dd")</span>
+                    @Ajax.ActionLink(Html.ShortenText(video.Name,16), "Detail", new { videoId = video.Id }, new AjaxOptions
+                       {
+                           InsertionMode = InsertionMode.Replace,
+                           UpdateTargetId = "info_show_place",
+                           HttpMethod = "GET",
+                           OnSuccess = "bindEventAfterGetVideoDetail"
+                       }, new { @class = "videoDetail", title = video.Name })
+                </li>
+            }
+            </ul>
+        </div>
+    </div>
+    
+</div>

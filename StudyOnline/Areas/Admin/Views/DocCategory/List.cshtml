@@ -1,0 +1,48 @@
+﻿@using Model
+@model IEnumerable <DocCategory>
+
+@{
+    ViewBag.Title = "文档类别管理";
+    ViewBag.ParentNav = "文档类别管理";
+    ViewBag.ParentUrl = Url.Action("List");
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div>
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th>类别名称</th>
+                <th>操作</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var cat in Model)
+        {
+            <tr>
+                <td>@Html.ActionLink(cat.Name,"Genre","Doc", new {area="Admin", categoryId = cat.Id,categoryName = cat.Name},null)</td>
+                <td>@Html.ActionLink("编辑", "List", new { categoryId = cat.Id })</td>
+                <td>@Html.ActionLink("删除", "Delete", "DocCategory", new { categoryId = cat.Id}, new { @class = "btn_delete" })</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+<div>@{
+    DocCategory category = Model.Where(c => c.Id == ViewBag.EditCategoryId).FirstOrDefault();
+    DocCategoryInfo categoryInfo = category == null ? new DocCategoryInfo() : DocCategoryInfo.FromDocCategory(category);
+    Html.RenderPartial("_AddDocCategory",categoryInfo);
+    }</div>
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        $(".btn_delete").click(function () {
+            var isDelete = confirm("警告：删除该目录将导致此目录下的所有文档别删除！确认删除？");
+            if (!isDelete) {
+                return false;
+            }
+        });
+    </script>
+}
